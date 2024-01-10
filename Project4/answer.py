@@ -20,16 +20,19 @@ if os.path.isdir("./content"):
             print(configur.read('config.ini')) 
             try:
                 print ("Pattern : ", str(configur.get('pattern','regex')))
-                pattern = str(configur.get('pattern','regex'))
+                pattern = r"{}".format(configur.get('pattern', 'regex'))
             except:
                 print ("Section in config file NOT FOUND")
             else: 
-                print ("Pattern in string: "+ pattern)
+                print (f"Pattern in string: {pattern}")
                 # this doesnt work
                 res_search = re.findall(pattern, page_text)
+                for match in re.finditer(pattern, page_text):
+                     print(f"Match: {match.group()}")
                 # this WORKS
-                # res_search = re.findall('Aenean pulvinar', page_text)
+                #res_search = re.findall('Aenean pulvinar', page_text)
                 print(res_search)
+                print(f"Matches: {res_search}")
                 file1.writelines(str(res_search))
                 f.close()
                 file1.close()
