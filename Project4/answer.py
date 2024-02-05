@@ -13,24 +13,24 @@ if os.path.isdir("./content"):
             page_num = int(input())
             page = pdf_reader.pages[page_num-1]
             page_text = page.extract_text()
-            print(page_text)
+            #print(page_text)
 
             configur = ConfigParser() 
             #If a file named in filenames cannot be opened, that file will be ignored.
             print(configur.read('config.ini')) 
             try:
-                print ("Pattern : ", str(configur.get('pattern','regex')))
+                print ("Pattern in config: ", str(configur.get('pattern','regex')))
                 pattern = r"{}".format(configur.get('pattern', 'regex'))
             except:
                 print ("Section in config file NOT FOUND")
             else: 
                 print (f"Pattern in string: {pattern}")
+                res_search = re.findall('Aenean pulvinar', page_text)
                 # this doesnt work
-                res_search = re.findall(pattern, page_text)
+                # res_search = re.findall(pattern, page_text)
                 for match in re.finditer(pattern, page_text):
                      print(f"Match: {match.group()}")
                 # this WORKS
-                #res_search = re.findall('Aenean pulvinar', page_text)
                 print(res_search)
                 print(f"Matches: {res_search}")
                 file1.writelines(str(res_search))

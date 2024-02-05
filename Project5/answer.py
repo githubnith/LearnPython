@@ -3,11 +3,11 @@ from PyPDF2 import PdfFileReader
 from configparser import ConfigParser 
 from pymongo import MongoClient 
 
+client = MongoClient("mongodb://localhost:27017/") 
+database = client.LearnPython
+collection = database.questions
 
 def connectDB(databaseName):
-    client = MongoClient("mongodb://localhost:27017/") 
-    database = client.LearnPython
-    collection = database.questions
     cursor = collection.find() 
     for record in cursor: 
         print(record)
@@ -41,15 +41,29 @@ def extractPDFContent():
                         print ("Section in config file NOT FOUND")
                     else: 
                         print ("Pattern in string: "+ pattern)
+                    matches = re.finditer('Question', page_text)
+                    for match in matches:
+                        start = max(0, match.start() - 3)
+                        end = match.end()
+                        lines_above = page_text[start:end].split('\n')
+
+                        # Insert into MongoDB
+                        entry = {
+                            'subject_name': subject_name,
+                            'question_text': question_text,
+                            'answer_options': answer_options,
+                            'chapter_name': chapter_name
+                        }
+                        collection.insert_one(document)
                     # this doesnt work
                     #res_search = re.findall('^Question.*$', page_text)
                     # this WORKS
-                        res_search = re.findall(r'^Question.*$', page_text)
-                        print(res_search)
-                        file1.writelines(str(res_search))
-                        questionFile.close()
-                        file1.close()
-                        print('SUCCESSFUL! contents read from testfile.pdf and stored in output.txt')
+                        # res_search = re.findall('Question', page_text)
+                        # print(res_search)
+                        # file1.writelines(str(res_search))
+                        # questionFile.close()
+                        # file1.close()
+                        # print('SUCCESSFUL! ')
             else:
                 print('OUTPUT File doesnt exist')
         else:
@@ -58,5 +72,5 @@ def extractPDFContent():
         print('CONTENT Folder doesnt exist')
 
 
-connectDB('questions') 
-extractPDFContent()
+# connectDB('questions') 
+# extractPDFContent()
